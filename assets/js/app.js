@@ -163,11 +163,9 @@ function render() {
               onclick="openProduct(${x.id})"
             >
 
-              ${
-                plan === 'premium'
-                  ? 'Personalizar'
-                  : 'Pedir por WhatsApp'
-              }
+             ${plan === 'premium'
+  ? 'Personalizar'
+  : 'Agregar al pedido'}
 
             </button>
 
@@ -440,26 +438,34 @@ function openProduct(id) {
 
   const p = P[id];
 
-
+  /* PLAN BÁSICO:
+     agrega directamente al carrito,
+     sin opciones de personalización
+  */
   if (plan === 'basic') {
 
-    window.open(
+    cart.push({
+      ...p,
+      size: '',
+      beer: '',
+      rim: '',
+      spicy: '',
+      qty: 1,
+      extra: false,
+      special: '',
+      final: p.price
+    });
 
-      'https://wa.me/?text=' +
-
-      encodeURIComponent(
-
-        `Hola, me interesa ${p.name} (${money(p.price)}). ¿Me confirman disponibilidad?`
-
-      ),
-
-      '_blank'
-    );
+    update();
+    openCart();
 
     return;
   }
 
 
+  /* PLAN PREMIUM:
+     abre personalización
+  */
   $('#modalBody').innerHTML = `
 
     <div class="pic modal-product-image">
@@ -471,36 +477,28 @@ function openProduct(id) {
 
     </div>
 
-
     <small>
       ${p.cat}
     </small>
-
 
     <h2>
       ${p.name}
     </h2>
 
-
     <h3>
       ${money(p.price)}
     </h3>
 
-
     ${options(p)}
-
 
     <button
       class="add"
       onclick="add(${id})"
     >
-
       Agregar al pedido
-
     </button>
 
   `;
-
 
   $('#modal')
     .classList
